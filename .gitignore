@@ -75,3 +75,64 @@ output/
 # =========================
 
 *.pbix.autosave
+
+
+# =========================
+# Data
+# =========================
+
+# Raw datasets
+data/raw/
+
+# Local/source copies of datasets
+data/source/
+
+# Generated data layers
+data/clean/
+data/integrated/
+data/features/
+data/semantic/
+
+# Generated metadata
+data/metadata/
+
+# =========================
+# Data files
+# =========================
+
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.pkl
+*.pickle
+
+# =========================
+# Database files
+# =========================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Generated models / artifacts
+# =========================
+
+models/
+artifacts/
+checkpoints/
+
+# =========================
+# Temporary analysis files
+# =========================
+
+*.bak
+*.swp
+*.swo
+
+# =========================
+# OS / editor files
+# =========================
+
+*.DS_Store
