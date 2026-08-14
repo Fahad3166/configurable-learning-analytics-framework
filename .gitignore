@@ -136,3 +136,5 @@ checkpoints/
 # =========================
 
 *.DS_Store
+
+docs/CLAF_Interview_and_Presentation_QA.md

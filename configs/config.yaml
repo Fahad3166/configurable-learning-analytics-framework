@@ -1,0 +1,105 @@
+project:
+  name: "Configurable Learning Analytics Framework"
+  short_name: "CLAF"
+  environment: "development"
+
+data:
+  raw_dir: "data/raw"
+  clean_dir: "data/clean"
+  integrated_dir: "data/integrated"
+  features_dir: "data/features"
+  semantic_dir: "data/semantic"
+  metadata_dir: "data/metadata"
+
+sources:
+  oulad:
+    enabled: true
+    source_type: "csv"
+    base_path: "data/raw/oulad"
+
+    expected_files:
+      assessments:
+        filename: "assessments.csv"
+        expected_columns:
+          - code_module
+          - code_presentation
+          - id_assessment
+          - assessment_type
+          - date
+          - weight
+
+      courses:
+        filename: "courses.csv"
+        expected_columns:
+          - code_module
+          - code_presentation
+          - module_presentation_length
+
+      student_assessment:
+        filename: "studentAssessment.csv"
+        expected_columns:
+          - id_assessment
+          - id_student
+          - date_submitted
+          - is_banked
+          - score
+
+      student_info:
+        filename: "studentInfo.csv"
+        expected_columns:
+          - code_module
+          - code_presentation
+          - id_student
+          - gender
+          - region
+          - highest_education
+          - imd_band
+          - age_band
+          - num_of_prev_attempts
+          - studied_credits
+          - disability
+          - final_result
+
+      student_registration:
+        filename: "studentRegistration.csv"
+        expected_columns:
+          - code_module
+          - code_presentation
+          - id_student
+          - date_registration
+          - date_unregistration
+
+      student_vle:
+        filename: "studentVle.csv"
+        large_file: true
+        chunksize: 100000
+        expected_columns:
+          - code_module
+          - code_presentation
+          - id_student
+          - id_site
+          - date
+          - sum_click
+
+      vle:
+        filename: "vle.csv"
+        expected_columns:
+          - id_site
+          - code_module
+          - code_presentation
+          - activity_type
+          - week_from
+          - week_to
+
+ingestion:
+  validate_file_exists: true
+  capture_file_size: true
+  capture_row_count: true
+  capture_column_count: true
+  capture_schema: true
+  generate_file_hash: true
+
+  metadata_output:
+    filename: "oulad_ingestion_manifest.json"
+
+  fail_on_missing_file: true
