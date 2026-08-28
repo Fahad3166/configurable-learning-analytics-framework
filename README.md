@@ -354,55 +354,6 @@ CLAF is being implemented incrementally.
 
 ---
 
-## Development Roadmap
-
-```text
-Project Foundation
-       ✓
-       │
-       ▼
-Dataset Evaluation
-       ✓
-       │
-       ▼
-Configurable Ingestion
-       ✓
-       │
-       ▼
-Preprocessing & Clean Validation
-       ✓
-       │
-       ▼
-Analytical Integration
-       ✓
-       │
-       ▼
-Metrics Engine
-       ◉  CURRENT
-       │
-       ▼
-Early-Warning Analytics
-       ○
-       │
-       ▼
-Power BI Dashboard
-       ○
-       │
-       ▼
-Continuous Improvement
-       ○
-```
-
-Legend:
-
-```text
-✓ Completed
-◉ In Progress
-○ Planned
-```
-
----
-
 ## Project Structure
 
 ```text
