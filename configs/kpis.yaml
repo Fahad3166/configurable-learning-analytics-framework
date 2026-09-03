@@ -1,0 +1,510 @@
+metrics:
+
+  engagement:
+
+    total_clicks:
+      metric_id: engagement_total_clicks
+      output_field: total_clicks
+      grain: student_enrollment
+      source: vle_activity
+      aggregation: sum
+      measure: daily_clicks
+      description: Total VLE clicks recorded during the module presentation.
+
+    active_days:
+      metric_id: engagement_active_days
+      output_field: active_days
+      grain: student_enrollment
+      source: vle_activity
+      aggregation: count_distinct
+      measure: date
+      description: Number of distinct presentation-relative days with recorded VLE activity.
+
+    avg_clicks_per_active_day:
+      metric_id: engagement_avg_clicks_active_day
+      output_field: avg_clicks_per_active_day
+      grain: student_enrollment
+      source: vle_activity
+      aggregation: ratio
+      numerator: total_clicks
+      denominator: active_days
+      zero_value_rule: unavailable_when_no_active_days
+      description: Average clicks across days on which the student recorded VLE activity.
+
+    last_activity_day:
+      metric_id: engagement_last_activity_day
+      output_field: last_activity_day
+      grain: student_enrollment
+      source: vle_activity
+      aggregation: max
+      measure: date
+      description: Latest presentation-relative day with recorded VLE activity.
+
+    weekly_clicks:
+      metric_id: engagement_weekly_clicks
+      output_field: weekly_clicks
+      grain: student_week
+      source: vle_activity
+      aggregation: sum
+      measure: daily_clicks
+      zero_value_rule: zero_for_eligible_week_without_activity
+      description: Total VLE clicks recorded during an eligible course week.
+
+    weekly_active_days:
+      metric_id: engagement_weekly_active_days
+      output_field: weekly_active_days
+      grain: student_week
+      source: vle_activity
+      aggregation: count_distinct
+      measure: date
+      zero_value_rule: zero_for_eligible_week_without_activity
+      description: Number of active VLE days during an eligible course week.
+
+    weekly_click_change_pct:
+      metric_id: engagement_weekly_change
+      output_field: weekly_click_change_pct
+      grain: student_week
+      source: student_week_engagement
+      aggregation: percent_change
+      measure: weekly_clicks
+      comparison_periods: 1
+      missing_value_rule: missing_when_previous_week_is_zero_or_unavailable
+      description: Percentage change in weekly clicks relative to the previous eligible course week.
+
+
+  assessment:
+
+    eligible_assessment_count:
+      metric_id: assessment_eligible_count
+      output_field: eligible_assessment_count
+      grain: student_enrollment
+      source:
+        - assessments
+        - student_enrollment
+        - course_presentation
+        - assessment_submission
+      aggregation: count
+      measure: id_assessment
+      eligibility_rule: within_student_participation_period
+      observability_rule: assessment_id_present_in_submission_source
+      description: Number of eligible assessment opportunities with observable outcome coverage.
+
+    assessment_submission_count:
+      metric_id: assessment_submission_count
+      output_field: assessment_submission_count
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: count
+      measure: id_assessment
+      eligibility_rule: eligible_and_observable
+      description: Number of eligible observable assessments with a recorded submission.
+
+    scored_assessment_count:
+      metric_id: assessment_scored_count
+      output_field: scored_assessment_count
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: count_non_null
+      measure: score
+      eligibility_rule: eligible_and_observable
+      description: Number of eligible submitted assessments with an available score.
+
+    assessment_completion_rate:
+      metric_id: assessment_completion_rate
+      output_field: assessment_completion_rate
+      grain: student_enrollment
+      source: assessment_metrics
+      aggregation: ratio
+      numerator: assessment_submission_count
+      denominator: eligible_assessment_count
+      zero_value_rule: zero_when_eligible_assessments_exist_but_none_submitted
+      missing_value_rule: missing_when_no_eligible_assessment_opportunities
+      description: Proportion of eligible observable assessment opportunities completed.
+
+    mean_score:
+      metric_id: assessment_mean_score
+      output_field: mean_score
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: mean
+      measure: score
+      eligibility_rule: eligible_assessments_only
+      missing_value_rule: exclude_missing_scores
+      description: Arithmetic mean of available scores from eligible submitted assessments.
+
+    eligible_coursework_weight:
+      metric_id: assessment_coursework_weight
+      output_field: eligible_coursework_weight
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: sum
+      measure: weight
+      assessment_types:
+        - TMA
+        - CMA
+      condition: weight > 0
+      eligibility_rule: eligible_assessments_only
+      description: Total positive coursework weight for which the student was eligible.
+
+    scored_coursework_weight:
+      metric_id: assessment_scored_coursework_weight
+      output_field: scored_coursework_weight
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: sum
+      measure: weight
+      assessment_types:
+        - TMA
+        - CMA
+      condition: weight > 0 and score is not missing
+      eligibility_rule: eligible_assessments_only
+      description: Eligible positive coursework weight with an available score.
+
+    coursework_score_coverage:
+      metric_id: assessment_coursework_coverage
+      output_field: coursework_score_coverage
+      grain: student_enrollment
+      source: assessment_metrics
+      aggregation: ratio
+      numerator: scored_coursework_weight
+      denominator: eligible_coursework_weight
+      zero_value_rule: zero_when_positive_eligible_weight_exists_but_no_scored_weight
+      missing_value_rule: missing_when_no_positive_eligible_coursework_weight
+      description: Proportion of eligible positive coursework weight represented by scored evidence.
+
+    coursework_weighted_score:
+      metric_id: assessment_coursework_weighted_score
+      output_field: coursework_weighted_score
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: weighted_mean
+      measure: score
+      weight_field: weight
+      assessment_types:
+        - TMA
+        - CMA
+      condition: weight > 0
+      eligibility_rule: eligible_assessments_only
+      missing_value_rule: missing_when_no_scored_positive_coursework_weight
+      description: Weighted mean score across eligible scored positive-weight coursework assessments.
+
+    exam_score:
+      metric_id: assessment_exam_score
+      output_field: exam_score
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: mean
+      measure: score
+      assessment_types:
+        - Exam
+      eligibility_rule: eligible_assessments_only
+      missing_value_rule: missing_when_no_scored_exam
+      description: Mean available score from eligible Exam assessments.
+
+    scored_exam_count:
+      metric_id: assessment_scored_exam_count
+      output_field: scored_exam_count
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: count_non_null
+      measure: score
+      assessment_types:
+        - Exam
+      eligibility_rule: eligible_assessments_only
+      description: Number of eligible Exam assessments with an available score.
+
+
+  submission_behavior:
+
+    timeliness_assessment_count:
+      metric_id: submission_timeliness_count
+      output_field: timeliness_assessment_count
+      grain: student_enrollment
+      source: assessment_submission
+      aggregation: count
+      eligibility_rule: eligible_assessments_only
+      due_date_rule: actual_due_date_required
+      banked_rule: exclude
+      description: Number of eligible non-banked submissions with an actual assessment due date.
+
+    mean_days_from_due:
+      metric_id: submission_mean_days_from_due
+      output_field: mean_days_from_due
+      grain: student_enrollment
+      source: assessment_submission
+      calculation: date_submitted - date
+      aggregation: mean
+      eligibility_rule: eligible_assessments_only
+      due_date_rule: actual_due_date_required
+      banked_rule: exclude
+      description: Mean difference between submission day and actual assessment due day.
+
+    late_submission_count:
+      metric_id: submission_late_count
+      output_field: late_submission_count
+      grain: student_enrollment
+      source: assessment_submission
+      condition: date_submitted > date
+      aggregation: count
+      eligibility_rule: eligible_assessments_only
+      due_date_rule: actual_due_date_required
+      banked_rule: exclude
+      description: Number of valid submissions made after the actual due date.
+
+    on_time_submission_count:
+      metric_id: submission_on_time_count
+      output_field: on_time_submission_count
+      grain: student_enrollment
+      source: assessment_submission
+      condition: date_submitted <= date
+      aggregation: count
+      eligibility_rule: eligible_assessments_only
+      due_date_rule: actual_due_date_required
+      banked_rule: exclude
+      description: Number of valid submissions made on or before the actual due date.
+
+    on_time_submission_rate:
+      metric_id: submission_on_time_rate
+      output_field: on_time_submission_rate
+      grain: student_enrollment
+      source: assessment_metrics
+      aggregation: ratio
+      numerator: on_time_submission_count
+      denominator: timeliness_assessment_count
+      missing_value_rule: missing_when_no_valid_timeliness_evidence
+      description: Proportion of valid classifiable submissions submitted on or before the due date.
+
+
+  cohort:
+
+    cohort_mean_clicks:
+      metric_id: cohort_mean_clicks
+      output_field: cohort_mean_clicks
+      grain: student_enrollment
+      source: student_learning_profile
+      cohort_grain:
+        - code_module
+        - code_presentation
+      measure: total_clicks
+      aggregation: leave_one_out_mean
+      missing_value_rule: exclude_missing_values
+      description: >
+        Mean total clicks of other students in the same module presentation,
+        excluding the current student's own value.
+
+    cohort_engagement_count:
+      metric_id: cohort_engagement_count
+      output_field: cohort_engagement_count
+      grain: student_enrollment
+      source: student_learning_profile
+      cohort_grain:
+        - code_module
+        - code_presentation
+      measure: total_clicks
+      aggregation: leave_one_out_count
+      missing_value_rule: exclude_missing_values
+      description: >
+        Number of peer students contributing engagement evidence to the
+        leave-one-out cohort benchmark.
+
+    clicks_vs_cohort:
+      metric_id: cohort_clicks_difference
+      output_field: clicks_vs_cohort
+      grain: student_enrollment
+      source: student_learning_profile
+      calculation: total_clicks - cohort_mean_clicks
+      missing_value_rule: missing_when_student_clicks_unavailable
+      description: >
+        Difference between the student's total clicks and the leave-one-out
+        mean of peers in the same module presentation.
+
+    cohort_mean_score:
+      metric_id: cohort_mean_score
+      output_field: cohort_mean_score
+      grain: student_enrollment
+      source: student_learning_profile
+      cohort_grain:
+        - code_module
+        - code_presentation
+      measure: mean_score
+      aggregation: leave_one_out_mean
+      missing_value_rule: exclude_missing_values
+      description: >
+        Mean score of other students in the same module presentation,
+        excluding the current student's own score.
+
+    cohort_score_count:
+      metric_id: cohort_score_count
+      output_field: cohort_score_count
+      grain: student_enrollment
+      source: student_learning_profile
+      cohort_grain:
+        - code_module
+        - code_presentation
+      measure: mean_score
+      aggregation: leave_one_out_count
+      missing_value_rule: exclude_missing_values
+      description: >
+        Number of peer students contributing score evidence to the
+        leave-one-out cohort benchmark.
+
+    score_vs_cohort:
+      metric_id: cohort_score_difference
+      output_field: score_vs_cohort
+      grain: student_enrollment
+      source: student_learning_profile
+      calculation: mean_score - cohort_mean_score
+      missing_value_rule: missing_when_student_score_unavailable
+      description: >
+        Difference between the student's mean score and the leave-one-out
+        mean score of peers in the same module presentation.
+
+risk:
+
+  thresholds:
+
+    engagement:
+      warning_clicks_vs_cohort: -800
+      high_risk_clicks_vs_cohort: -1300
+
+    performance:
+      warning_score_vs_cohort: -10
+      high_risk_score_vs_cohort: -20
+
+    assessment:
+      warning_completion_rate: 0.75
+      high_risk_completion_rate: 0.50
+
+    submission:
+      warning_on_time_rate: 0.75
+      high_risk_on_time_rate: 0.50
+
+    trajectory:
+      metric: four_week_click_change_pct
+      observation_progress: 0.50
+      window_weeks: 4
+      warning_four_week_click_change_pct: -50
+      high_risk_four_week_click_change_pct: -75
+      missing_value_rule: unavailable_when_previous_window_has_zero_clicks
+      description: >
+        Engagement trajectory is evaluated at the configured course-progress
+        observation point by comparing clicks in the most recent four eligible
+        weeks with clicks in the preceding four eligible weeks.
+
+
+  scoring:
+
+    engagement:
+      warning_points: 1
+      high_risk_points: 2
+
+    performance:
+      warning_points: 1
+      high_risk_points: 2
+
+    assessment:
+      warning_points: 1
+      high_risk_points: 2
+
+    submission:
+      warning_points: 1
+      high_risk_points: 2
+
+    trajectory:
+      warning_points: 1
+      high_risk_points: 2
+
+
+  classification:
+
+    low:
+      min_score: 0
+      max_score: 1
+
+    moderate:
+      min_score: 2
+      max_score: 3
+
+    high:
+      min_score: 4
+      max_score: 10
+
+
+  missing_value_rule: unavailable_signal_contributes_zero_points
+
+  evidence:
+
+    total_signals: 5
+    minimum_signals_for_classification: 3
+
+    sufficient:
+      min_signals: 3
+      max_signals: 5
+
+    limited:
+      min_signals: 1
+      max_signals: 2
+
+    insufficient:
+      min_signals: 0
+      max_signals: 0
+
+    classification_rule: >
+      Low, moderate, or high risk classification is produced only when
+      at least three risk signals are available. Risk scores may still
+      be calculated from available signals when evidence is limited,
+      but the resulting score must not be interpreted as a complete
+      student risk classification.
+
+    missing_evidence_rule: >
+      Missing evidence does not contribute risk points and must not
+      itself be interpreted as student risk.
+
+  description: >
+    Configurable multi-signal risk model combining engagement relative
+    to peers, performance relative to peers, assessment completion,
+    submission behavior, and recent engagement trajectory. Thresholds
+    are initial OULAD-informed configuration values and are not intended
+    as universal educational risk thresholds.
+
+
+improvement:
+
+  assessment_progression:
+
+    metric: assessment_score_change
+
+    observation_progress: 0.50
+
+    window_assessments: 2
+
+    assessment_types:
+      - TMA
+      - CMA
+
+    improvement_threshold_points: 10
+    decline_threshold_points: -10
+
+    minimum_scored_assessments: 4
+
+    categories:
+      improved: >
+        assessment_score_change >= 10
+      stable: >
+        assessment_score_change > -10 and
+        assessment_score_change < 10
+      declined: >
+        assessment_score_change <= -10
+
+    missing_value_rule: >
+      Assessment progression is unavailable when fewer than four eligible
+      scored coursework assessments are available by the configured
+      observation point.
+
+    description: >
+      Assessment progression compares the mean score of the two most recent
+      eligible scored coursework assessments with the mean score of the
+      preceding two eligible scored coursework assessments at the configured
+      course-progress observation point. The indicator is an optional
+      longitudinal improvement measure and is not required for the primary
+      risk classification.    
