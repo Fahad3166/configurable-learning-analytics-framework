@@ -14,7 +14,7 @@ The current reference implementation uses the **Open University Learning Analyti
 
 ## Project Motivation
 
-Educational institutions collect data from learning management systems, assessments, student information systems, and digital learning environments. However, transforming these data into meaningful and actionable learning insights requires more than simply building dashboards.
+Educational institutions collect data from learning management systems, assessments, student information systems, Student Surveys, and digital learning environments. However, transforming these data into meaningful and actionable learning insights requires more than simply building dashboards.
 
 The data must first be:
 
