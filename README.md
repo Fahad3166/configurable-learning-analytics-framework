@@ -9,7 +9,7 @@ To demonstrate both analytical strategy and technical execution, this repository
 * ### [📋 IT:U Second-Round Interview Task Guide (PDF)](./Second-Round%20Interviews%20Tasks%20LA.pdf)
   *The official scenario and requirements provided by IT:U regarding the measurement of Computational Thinking and Digital Competencies.*
 
-* ### [📊 Learning Analytics Framework & Design Concept (Presentation)](./ITU_Learning_Analytics_Framework.key)
+* ### [📊 Learning Analytics Framework & Design Concept (Presentation)](./ITU_Final_Presentation.pdf)
   *The 5-slide presentation covering the proposed data collection strategy, data architecture, key metrics, and continuous feedback loops.*
 
 ---
