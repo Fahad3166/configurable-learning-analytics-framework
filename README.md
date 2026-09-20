@@ -1,3 +1,7 @@
+# Configurable Learning Analytics Framework
+### Functional Implementation & Technical Proof for IT:U Learning Data Analyst Assessment
+The second-round task requested a conceptual data pipeline and analytics framework to measure computational thinking and digital competencies across diverse academic backgrounds at IT:U. While coding was not required for the presentation, I engineered a functional, parameter-driven prototype on GitHub (configurable-learning-analytics-framework) to validate the conceptual design.   I built this implementation to demonstrate how object-oriented design and dynamic configuration engines can translate high-level learning analytics models into scalable, production-ready software tools. It illustrates my ability to bridge data strategy with software engineering, ensuring that IT:U’s project-based LearnLab environment is backed by adaptive, extensible data infrastructure.
+
 # Configurable Learning Analytics Framework (CLAF)
 
 CLAF is a configurable learning analytics framework designed to transform raw educational data into validated analytical models, learning metrics, early-warning indicators, and decision-support dashboards.
